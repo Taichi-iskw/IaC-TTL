@@ -1,0 +1,26 @@
+run:
+    timeout: 5m
+    tests: true
+
+linters:
+    enable:
+        - gofumpt
+        - govet
+        - staticcheck
+        - revive
+        - errcheck
+        - gosec
+
+linters-settings:
+    gofumpt:
+        lang-version: "1.22"
+    revive:
+        config: .revive.toml
+
+exclude-rules:
+    - path: _gen\.go
+      linters: [all]
+
+build:
+    skip-dirs:
+        - vendor
