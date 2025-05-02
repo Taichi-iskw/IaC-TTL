@@ -1,0 +1,41 @@
+name: 🔧Go CI
+
+on:
+    push:
+        branches: ["**"]
+    pull_request:
+        branches: ["**"]
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    lint-test:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Go
+              uses: actions/setup-go@v5
+              with:
+                  go-version-file: go.mod
+                  cache: true
+                  cache-dependency-path: go.mod
+
+            - name: Install extra tools
+              run: go install mvdan.cc/gofumpt@latest
+
+            - name: Run tests
+              run: go test ./...
+
+            - name: Run go vet
+              run: go vet ./...
+
+            - name: Run golangci-lint
+              uses: golangci/golangci-lint-action@v7
+              with:
+                  version: v2.1.5
+                  args: --timeout=5m
