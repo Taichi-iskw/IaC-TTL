@@ -5,13 +5,19 @@ package cmd
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/spf13/cobra"
 )
 
+var (
+	hours   int
+	minutes int
+)
+
 // scheduleCmd represents the schedule command
 var scheduleCmd = &cobra.Command{
-	Use:   "schedule",
+	Use:   "schedule <stack-name>",
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
@@ -19,21 +25,23 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("schedule called")
+	Args: cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		stack := args[0]
+		ttl := time.Duration(hours)*time.Hour + time.Duration(minutes)*time.Minute
+
+		if ttl <= 0 {
+			return fmt.Errorf("TTL must be greater than 0")
+		}
+
+		// TODO: Replace with call to internal/scheduler.CreateSchedule()
+		fmt.Printf("[DEBUG] scheduling stack '%s' to expire in %v\n", stack, ttl)
+		return nil
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(scheduleCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// scheduleCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// scheduleCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	scheduleCmd.Flags().IntVarP(&hours, "hours", "H", 0, "TTL in hours")
+	scheduleCmd.Flags().IntVarP(&minutes, "minutes", "m", 0, "TTL in minutes")
 }
