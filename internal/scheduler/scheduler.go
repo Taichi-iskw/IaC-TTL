@@ -33,15 +33,20 @@ func CreateSchedule(stackName string, ttl time.Duration) error {
 // CreateScheduleWithClient is a helper function that accepts a client for testing purposes
 func CreateScheduleWithClient(client SchedulerClient, stackName string, ttl time.Duration) error {
 	// create schedule input
-	execTime := time.Now().Add(ttl).UTC().Format(time.RFC3339)
+	execTime := time.Now().Add(ttl).UTC().Format("2006-01-02T15:04:05")
+
 	scheduleName := fmt.Sprintf("ttl-delete-%s", stackName)
+
+	const Arn = ""
+	const RoleArn = ""
 
 	input := &scheduler.CreateScheduleInput{
 		Name:               aws.String(scheduleName),
 		ScheduleExpression: aws.String(fmt.Sprintf("at(%s)", execTime)),
+		GroupName:          aws.String("iac-ttl"),
 		Target: &types.Target{
-			Arn:     aws.String("arn:aws:scheduler:::target/CFN-DeleteStack"), // TODO: mock
-			RoleArn: aws.String("arn:aws:iam::<account>:role/<scheduler-role>"),
+			Arn:     aws.String(Arn),
+			RoleArn: aws.String(RoleArn),
 			Input:   aws.String(fmt.Sprintf(`{"StackName":"%s"}`, stackName)),
 		},
 		FlexibleTimeWindow: &types.FlexibleTimeWindow{

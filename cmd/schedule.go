@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/Taichi-iskw/IaC-TTL/internal/scheduler"
 	"github.com/spf13/cobra"
 )
 
@@ -34,7 +35,12 @@ to quickly create a Cobra application.`,
 			return fmt.Errorf("TTL must be greater than 0")
 		}
 
-		// TODO: Replace with call to internal/scheduler.CreateSchedule()
+		// create schedule
+		err := scheduler.CreateSchedule(stack, ttl)
+		if err != nil {
+			return fmt.Errorf("failed to create schedule: %v", err)
+		}
+
 		fmt.Printf("[DEBUG] scheduling stack '%s' to expire in %v\n", stack, ttl)
 		return nil
 	},
