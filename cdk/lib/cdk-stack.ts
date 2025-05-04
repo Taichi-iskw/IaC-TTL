@@ -4,6 +4,7 @@ import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambdaNode from "aws-cdk-lib/aws-lambda-nodejs";
 import * as scheduler from "aws-cdk-lib/aws-scheduler";
+import * as ssm from "aws-cdk-lib/aws-ssm";
 
 export class CdkStack extends cdk.Stack {
 	constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -60,13 +61,15 @@ export class CdkStack extends cdk.Stack {
 			name: "iac-ttl",
 		});
 
-		// outputs
-		new cdk.CfnOutput(this, createName("DestroyExecFnArn"), {
-			value: destroyFn.functionArn,
+		// ssm parameter
+		new ssm.StringParameter(this, createName("DestroyFunctionArnParam"), {
+			parameterName: "/iac-ttl/destroy-fn-arn",
+			stringValue: destroyFn.functionArn,
 		});
 
-		new cdk.CfnOutput(this, createName("SchedulerInvokeRoleArn"), {
-			value: schedulerInvokeRole.roleArn,
+		new ssm.StringParameter(this, createName("SchedulerRoleArnParam"), {
+			parameterName: "/iac-ttl/scheduler-role-arn",
+			stringValue: schedulerInvokeRole.roleArn,
 		});
 	}
 }
