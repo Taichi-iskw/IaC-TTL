@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/scheduler"
 	"github.com/aws/aws-sdk-go-v2/service/scheduler/types"
+	"github.com/aws/aws-sdk-go-v2/service/ssm"
 )
 
 // NewSchedulerClient creates a new AWS Event Scheduler client
@@ -34,11 +35,16 @@ func CreateSchedule(stackName string, ttl time.Duration) error {
 func CreateScheduleWithClient(client SchedulerClient, stackName string, ttl time.Duration) error {
 	// create schedule input
 	execTime := time.Now().Add(ttl).UTC().Format("2006-01-02T15:04:05")
-
 	scheduleName := fmt.Sprintf("ttl-delete-%s", stackName)
 
-	const Arn = ""
-	const RoleArn = ""
+	Arn, err := getParameter("/iac-ttl/destroy-fn-arn")
+	if err != nil {
+		return err
+	}
+	RoleArn, err := getParameter("/iac-ttl/scheduler-role-arn")
+	if err != nil {
+		return err
+	}
 
 	input := &scheduler.CreateScheduleInput{
 		Name:               aws.String(scheduleName),
@@ -55,6 +61,25 @@ func CreateScheduleWithClient(client SchedulerClient, stackName string, ttl time
 	}
 
 	// call api
-	_, err := client.CreateSchedule(context.TODO(), input)
+	_, err = client.CreateSchedule(context.TODO(), input)
 	return err
+}
+
+func getParameter(name string) (string, error) {
+	ctx := context.TODO()
+
+	cfg, err := config.LoadDefaultConfig(ctx)
+	if err != nil {
+		return "", err
+	}
+	client := ssm.NewFromConfig(cfg)
+
+	resp, err := client.GetParameter(ctx, &ssm.GetParameterInput{
+		Name: aws.String(name),
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return *resp.Parameter.Value, nil
 }
