@@ -6,9 +6,19 @@ import * as lambdaNode from "aws-cdk-lib/aws-lambda-nodejs";
 import * as scheduler from "aws-cdk-lib/aws-scheduler";
 import * as ssm from "aws-cdk-lib/aws-ssm";
 
+interface CdkStackProps extends cdk.StackProps {
+	projectName: string;
+}
+
 export class CdkStack extends cdk.Stack {
-	constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+	constructor(scope: Construct, id: string, props?: CdkStackProps) {
 		super(scope, id, props);
+
+		const projectName = props?.projectName;
+		if (!projectName) {
+			throw new Error("projectName is required");
+		}
+		const createName = setCreateName(projectName);
 
 		// delete lambda
 		const destroyFn = new lambdaNode.NodejsFunction(
@@ -33,7 +43,7 @@ export class CdkStack extends cdk.Stack {
 			new iam.PolicyStatement({
 				actions: ["scheduler:DeleteSchedule"],
 				resources: [
-					`arn:aws:scheduler:${this.region}:${this.account}:schedule/iac-ttl/*`,
+					`arn:aws:scheduler:${this.region}:${this.account}:schedule/${projectName}/*`,
 				],
 			})
 		);
@@ -58,23 +68,22 @@ export class CdkStack extends cdk.Stack {
 
 		// scheduler group
 		new scheduler.CfnScheduleGroup(this, createName("SchedulerGroup"), {
-			name: "iac-ttl",
+			name: projectName,
 		});
 
 		// ssm parameter
 		new ssm.StringParameter(this, createName("DestroyFunctionArnParam"), {
-			parameterName: "/iac-ttl/destroy-fn-arn",
+			parameterName: `/${projectName}/destroy-fn-arn`,
 			stringValue: destroyFn.functionArn,
 		});
 
 		new ssm.StringParameter(this, createName("SchedulerRoleArnParam"), {
-			parameterName: "/iac-ttl/scheduler-role-arn",
+			parameterName: `/${projectName}/scheduler-role-arn`,
 			stringValue: schedulerInvokeRole.roleArn,
 		});
 	}
 }
 
-function createName(name: string) {
-	const projectName = "iac-ttl";
-	return `${projectName}-${name}`;
+function setCreateName(projectName: string) {
+	return (name: string) => `${projectName}-${name}`;
 }
