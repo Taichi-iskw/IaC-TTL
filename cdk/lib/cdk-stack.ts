@@ -3,11 +3,13 @@ import { Construct } from "constructs";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambdaNode from "aws-cdk-lib/aws-lambda-nodejs";
+import * as scheduler from "aws-cdk-lib/aws-scheduler";
 
 export class CdkStack extends cdk.Stack {
 	constructor(scope: Construct, id: string, props?: cdk.StackProps) {
 		super(scope, id, props);
 
+		// delete lambda
 		const destroyFn = new lambdaNode.NodejsFunction(
 			this,
 			createName("DestroyExecFn"),
@@ -35,6 +37,7 @@ export class CdkStack extends cdk.Stack {
 			})
 		);
 
+		// scheduler invoke role
 		const schedulerInvokeRole = new iam.Role(
 			this,
 			createName("SchedulerInvokeRole"),
@@ -52,6 +55,12 @@ export class CdkStack extends cdk.Stack {
 			})
 		);
 
+		// scheduler group
+		new scheduler.CfnScheduleGroup(this, createName("SchedulerGroup"), {
+			name: "iac-ttl",
+		});
+
+		// outputs
 		new cdk.CfnOutput(this, createName("DestroyExecFnArn"), {
 			value: destroyFn.functionArn,
 		});
