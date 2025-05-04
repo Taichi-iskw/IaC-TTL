@@ -1,0 +1,8 @@
+{
+	"name": "delete-stack-lambda",
+	"type": "module",
+	"dependencies": {
+		"@aws-sdk/client-cloudformation": "^3.500.0",
+		"@types/aws-lambda": "^8.10.0"
+	}
+}
