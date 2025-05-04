@@ -26,6 +26,14 @@ export class CdkStack extends cdk.Stack {
 				resources: ["*"],
 			})
 		);
+		destroyFn.addToRolePolicy(
+			new iam.PolicyStatement({
+				actions: ["scheduler:DeleteSchedule"],
+				resources: [
+					`arn:aws:scheduler:${this.region}:${this.account}:schedule/iac-ttl/*`,
+				],
+			})
+		);
 
 		const schedulerInvokeRole = new iam.Role(
 			this,
