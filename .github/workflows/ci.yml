@@ -3,12 +3,14 @@ name: 🔧Go CI
 on:
     push:
         branches: ["**"]
-    pull_request:
-        branches: ["**"]
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
     cancel-in-progress: true
+
+permissions:
+    id-token: write
+    contents: read
 
 jobs:
     lint-test:
@@ -27,6 +29,12 @@ jobs:
 
             - name: Install extra tools
               run: go install mvdan.cc/gofumpt@latest
+
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v3
+              with:
+                  role-to-assume: ${{ secrets.AWS_IAM_ROLE_ARN }}
+                  aws-region: ap-northeast-1
 
             - name: Run tests
               run: go test ./...
