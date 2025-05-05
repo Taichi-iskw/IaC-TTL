@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/scheduler"
 )
 
-func TestCreateSchedule(t *testing.T) {
+func TestAddSchedule(t *testing.T) {
 	// Create a mock client
 	mockClient := &MockSchedulerClient{
 		CreateScheduleFunc: func(ctx context.Context, params *scheduler.CreateScheduleInput, optFns ...func(*scheduler.Options)) (*scheduler.CreateScheduleOutput, error) {
@@ -30,7 +30,7 @@ func TestCreateSchedule(t *testing.T) {
 	}
 
 	// Test the function
-	err := CreateScheduleWithClient(mockClient, "test-stack", 1*time.Hour)
+	err := AddScheduleWithClient(mockClient, "test-stack", 1*time.Hour)
 	if err != nil {
 		t.Fatalf("Failed to create schedule: %v", err)
 	}

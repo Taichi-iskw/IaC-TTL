@@ -11,9 +11,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// cancelCmd represents the cancel command
-var cancelCmd = &cobra.Command{
-	Use:   "cancel",
+// rmCmd represents the rm command
+var rmCmd = &cobra.Command{
+	Use:   "rm",
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
@@ -25,7 +25,7 @@ to quickly create a Cobra application.`,
 		stackName := args[0]
 		fmt.Printf("[INFO] cancelling schedule for stack: %s\n", stackName)
 
-		if err := scheduler.DeleteSchedule(cmd.Context(), stackName); err != nil {
+		if err := scheduler.RemoveSchedule(cmd.Context(), stackName); err != nil {
 			log.Fatalf("Error: failed to delete schedule: %v\n", err)
 		}
 
@@ -34,6 +34,5 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	rootCmd.AddCommand(cancelCmd)
-
+	rootCmd.AddCommand(rmCmd)
 }

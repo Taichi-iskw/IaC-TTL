@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDeleteSchedule(t *testing.T) {
+func TestRemoveSchedule(t *testing.T) {
 	tests := []struct {
 		name          string
 		stackName     string
@@ -59,7 +59,7 @@ func TestDeleteSchedule(t *testing.T) {
 			}()
 
 			ctx := context.Background()
-			err := DeleteSchedule(ctx, tt.stackName)
+			err := RemoveSchedule(ctx, tt.stackName)
 
 			if tt.expectedError != nil {
 				assert.Error(t, err)
