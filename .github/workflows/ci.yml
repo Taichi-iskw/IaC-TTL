@@ -23,9 +23,9 @@ jobs:
             - name: Set up Go
               uses: actions/setup-go@v5
               with:
-                  go-version-file: go.mod
+                  go-version-file: cli/go.mod
                   cache: true
-                  cache-dependency-path: go.mod
+                  cache-dependency-path: cli/go.mod
 
             - name: Install extra tools
               run: go install mvdan.cc/gofumpt@latest
@@ -38,12 +38,15 @@ jobs:
 
             - name: Run tests
               run: go test ./...
+              working-directory: cli
 
             - name: Run go vet
               run: go vet ./...
+              working-directory: cli
 
             - name: Run golangci-lint
               uses: golangci/golangci-lint-action@v7
               with:
                   version: v2.1.5
                   args: --timeout=5m
+                  working-directory: cli
