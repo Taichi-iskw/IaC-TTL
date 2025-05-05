@@ -12,15 +12,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ssm"
 )
 
-// NewSchedulerClient creates a new AWS Event Scheduler client
-func NewSchedulerClient(ctx context.Context) (SchedulerClient, error) {
-	cfg, err := config.LoadDefaultConfig(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return scheduler.NewFromConfig(cfg), nil
-}
-
 func CreateSchedule(stackName string, ttl time.Duration) error {
 	// create client
 	client, err := NewSchedulerClient(context.TODO())
