@@ -12,18 +12,18 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ssm"
 )
 
-func CreateSchedule(stackName string, ttl time.Duration) error {
+func AddSchedule(ctx context.Context, stackName string, ttl time.Duration) error {
 	// create client
-	client, err := NewSchedulerClient(context.TODO())
+	client, err := NewSchedulerClient(ctx)
 	if err != nil {
 		return err
 	}
 
-	return CreateScheduleWithClient(client, stackName, ttl)
+	return AddScheduleWithClient(client, stackName, ttl)
 }
 
-// CreateScheduleWithClient is a helper function that accepts a client for testing purposes
-func CreateScheduleWithClient(client SchedulerClient, stackName string, ttl time.Duration) error {
+// AddScheduleWithClient is a helper function that accepts a client for testing purposes
+func AddScheduleWithClient(client SchedulerClient, stackName string, ttl time.Duration) error {
 	// create schedule input
 	execTime := time.Now().Add(ttl).UTC().Format("2006-01-02T15:04:05")
 	scheduleName := fmt.Sprintf("ttl-delete-%s", stackName)

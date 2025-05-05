@@ -16,9 +16,9 @@ var (
 	minutes int
 )
 
-// scheduleCmd represents the schedule command
-var scheduleCmd = &cobra.Command{
-	Use:   "schedule <stack-name>",
+// addCmd represents the add command
+var addCmd = &cobra.Command{
+	Use:   "add <stack-name>",
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
@@ -36,7 +36,7 @@ to quickly create a Cobra application.`,
 		}
 
 		// create schedule
-		err := scheduler.CreateSchedule(stack, ttl)
+		err := scheduler.AddSchedule(cmd.Context(), stack, ttl)
 		if err != nil {
 			return fmt.Errorf("failed to create schedule: %v", err)
 		}
@@ -47,7 +47,7 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	rootCmd.AddCommand(scheduleCmd)
-	scheduleCmd.Flags().IntVarP(&hours, "hours", "H", 0, "TTL in hours")
-	scheduleCmd.Flags().IntVarP(&minutes, "minutes", "m", 0, "TTL in minutes")
+	rootCmd.AddCommand(addCmd)
+	addCmd.Flags().IntVarP(&hours, "hours", "H", 0, "TTL in hours")
+	addCmd.Flags().IntVarP(&minutes, "minutes", "m", 0, "TTL in minutes")
 }
