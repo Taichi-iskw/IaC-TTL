@@ -45,6 +45,10 @@ iac-ttl ls
 iac-ttl rm my-stack
 ```
 
+## AWS Architecture
+
+![aws-architecture](./docs/images/IaC-TTL_AWS_Architecture.png)
+
 ## Features
 
 - Schedule CloudFormation stacks for automatic deletion after a specified time period
@@ -77,23 +81,6 @@ make cdk-deploy
 
 # Destroy the infrastructure
 make destroy
-```
-
-## Project Structure
-
-```
-.
-├── cdk/                 # AWS CDK infrastructure code
-├── cli/                 # CLI application code
-│   ├── cmd/            # Command definitions
-│   │   ├── add.go      # Add command
-│   │   ├── ls.go       # List command
-│   │   ├── rm.go       # Remove command
-│   │   └── root.go     # Root command
-│   └── internal/       # Internal packages
-│       └── scheduler/  # AWS Scheduler client
-├── Makefile            # Build and deployment tasks
-└── README.md           # This file
 ```
 
 ## Requirements
