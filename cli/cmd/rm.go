@@ -13,23 +13,24 @@ import (
 
 // rmCmd represents the rm command
 var rmCmd = &cobra.Command{
-	Use:   "rm",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Use:   "rm <stack-name>",
+	Short: "Remove a scheduled CloudFormation stack deletion",
+	Long: `Remove a scheduled deletion for a CloudFormation stack.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+This command cancels a previously scheduled deletion for a specified stack.
+The stack will no longer be automatically deleted at the scheduled time.
+
+Example:
+  # Remove a scheduled deletion for a stack
+  iac-ttl rm my-stack`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		stackName := args[0]
-		fmt.Printf("[INFO] cancelling schedule for stack: %s\n", stackName)
-
-		if err := scheduler.RemoveSchedule(cmd.Context(), stackName); err != nil {
-			log.Fatalf("Error: failed to delete schedule: %v\n", err)
+		err := scheduler.RemoveSchedule(cmd.Context(), stackName)
+		if err != nil {
+			log.Fatalf("failed to remove schedule: %v", err)
 		}
-
-		fmt.Println("[OK] schedule deleted successfully")
+		fmt.Printf("Successfully removed scheduled deletion for stack '%s'\n", stackName)
 	},
 }
 

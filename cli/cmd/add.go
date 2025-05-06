@@ -19,13 +19,21 @@ var (
 // addCmd represents the add command
 var addCmd = &cobra.Command{
 	Use:   "add <stack-name>",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Schedule a CloudFormation stack for deletion after a specified time",
+	Long: `Schedule a CloudFormation stack for automatic deletion after a specified time period.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+This command creates a schedule in AWS EventBridge Scheduler to delete the specified
+CloudFormation stack after the given time period (TTL - Time To Live).
+
+Examples:
+  # Schedule a stack for deletion after 24 hours
+  iac-ttl add my-stack -H 24
+
+  # Schedule a stack for deletion after 30 minutes
+  iac-ttl add my-stack -m 30
+
+  # Schedule a stack for deletion after 1 hour and 30 minutes
+  iac-ttl add my-stack -H 1 -m 30`,
 	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		stack := args[0]

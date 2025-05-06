@@ -14,13 +14,15 @@ import (
 // lsCmd represents the ls command
 var lsCmd = &cobra.Command{
 	Use:   "ls",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "List all scheduled CloudFormation stack deletions",
+	Long: `List all CloudFormation stacks that are scheduled for automatic deletion.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+This command displays a table of all stacks that have been scheduled for deletion,
+showing their names and scheduled deletion times.
+
+Example:
+  # List all scheduled stack deletions
+  iac-ttl ls`,
 	Run: func(cmd *cobra.Command, args []string) {
 		schedules, err := scheduler.ListSchedules(cmd.Context())
 		if err != nil {
