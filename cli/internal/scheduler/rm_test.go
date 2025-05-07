@@ -2,11 +2,12 @@ package scheduler
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/scheduler"
-	"github.com/aws/aws-sdk-go-v2/service/ssm/types"
+	"github.com/aws/aws-sdk-go-v2/service/scheduler/types"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -37,7 +38,7 @@ func TestRemoveSchedule(t *testing.T) {
 					return nil, &types.ResourceNotFoundException{}
 				},
 			},
-			expectedError: &types.ResourceNotFoundException{},
+			expectedError: errors.New("no scheduled deletion found for stack 'non-existent-stack'"),
 		},
 		{
 			name:      "error deleting schedule",
@@ -47,7 +48,7 @@ func TestRemoveSchedule(t *testing.T) {
 					return nil, assert.AnError
 				},
 			},
-			expectedError: assert.AnError,
+			expectedError: errors.New("failed to remove schedule: assert.AnError general error for testing"),
 		},
 	}
 
@@ -63,7 +64,7 @@ func TestRemoveSchedule(t *testing.T) {
 
 			if tt.expectedError != nil {
 				assert.Error(t, err)
-				assert.IsType(t, tt.expectedError, err)
+				assert.Equal(t, tt.expectedError.Error(), err.Error())
 			} else {
 				assert.NoError(t, err)
 			}
