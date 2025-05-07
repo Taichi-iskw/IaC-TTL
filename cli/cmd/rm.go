@@ -7,30 +7,38 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/Taichi-iskw/IaC-TTL/internal/manifest"
 	"github.com/Taichi-iskw/IaC-TTL/internal/scheduler"
 	"github.com/spf13/cobra"
 )
 
 // rmCmd represents the rm command
 var rmCmd = &cobra.Command{
-	Use:   "rm <stack-name>",
-	Short: "Remove a scheduled CloudFormation stack deletion",
-	Long: `Remove a scheduled deletion for a CloudFormation stack.
-
-This command cancels a previously scheduled deletion for a specified stack.
-The stack will no longer be automatically deleted at the scheduled time.
-
-Example:
-  # Remove a scheduled deletion for a stack
-  iac-ttl rm my-stack`,
-	Args: cobra.ExactArgs(1),
+	Use:   "rm [stack-name]",
+	Short: "Remove a scheduled stack deletion",
+	Long: `Remove a scheduled stack deletion.
+If stack-name is not provided, it will be automatically detected from the manifest.json file in the cdk.out folder.`,
+	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		stackName := args[0]
-		err := scheduler.RemoveSchedule(cmd.Context(), stackName)
-		if err != nil {
-			log.Fatalf("failed to remove schedule: %v", err)
+		var stack string
+		var err error
+
+		if len(args) > 0 {
+			stack = args[0]
+		} else {
+			stack, err = manifest.GetStackNameFromManifest()
+			if err != nil {
+				log.Fatalf("Failed to get stack name from manifest: %v", err)
+			}
 		}
-		fmt.Printf("Successfully removed scheduled deletion for stack '%s'\n", stackName)
+
+		err = scheduler.RemoveSchedule(cmd.Context(), stack)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		fmt.Printf("Successfully removed scheduled deletion for stack '%s'\n", stack)
 	},
 }
 
