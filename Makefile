@@ -13,6 +13,7 @@ build:
 .PHONY: install
 install: build
 	@echo "Installing CLI..."
+	mkdir -p $(HOME)/bin
 	mv $(BINARY_NAME) $(HOME)/bin/
 
 # Clean build artifacts
