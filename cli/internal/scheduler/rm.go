@@ -26,7 +26,7 @@ func RemoveSchedule(ctx context.Context, stackName string) error {
 	if err != nil {
 		var resourceNotFound *types.ResourceNotFoundException
 		if errors.As(err, &resourceNotFound) {
-			return errors.New(fmt.Sprintf("no scheduled deletion found for stack '%s'", stackName))
+			return fmt.Errorf("no scheduled deletion found for stack '%s'", stackName)
 		}
 		return fmt.Errorf("failed to remove schedule: %w", err)
 	}
