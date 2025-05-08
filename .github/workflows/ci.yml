@@ -3,6 +3,9 @@ name: 🔧Go CI
 on:
     push:
         branches: ["**"]
+        paths:
+            - "cli/**"
+            - ".github/workflows/ci.yml"
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
